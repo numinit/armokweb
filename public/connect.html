@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!--
+	Copyright (c) 2013-2017 Antoine Martin <antoine@devloop.org.uk>
+	Copyright (c) 2014 Joshua Higgins <josh@kxes.net>
+	Licensed under MPL 2.0
+	-->
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<!-- Bootstrap core CSS -->
+	<link href="css/bootstrap.css" rel="stylesheet">
+	<!-- Custom styles for this template -->
+	<link href="css/signin.css" rel="stylesheet">
+	<title>Xpra HTML5 Client</title>
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+	<link rel="icon" type="image/png" href="favicon.png">
+
+	<script type="text/javascript" src="js/lib/jquery.js"></script>
+	<script type="text/javascript" src="js/Utilities.js"></script>
+	<script type="text/javascript" src="js/MediaSourceUtil.js"></script>
+	<script type="text/javascript" src="js/lib/aurora/aurora.js"></script>
+	<!--
+	<script type="text/javascript" src="js/lib/aurora/mp3.js"></script>
+	<script type="text/javascript" src="js/lib/aurora/flac.js"></script>
+	<script type="text/javascript" src="js/lib/aurora/aac.js"></script>
+	-->
+</head>
+
+<body>
+
+<div class="container">
+
+		<form class="form-signin" action="./index.html">
+
+	  	  <img src="icons/xpra-logo.png" alt="xpra logo">
+		  <h2 class="form-signin-heading">Xpra HTML5 Client</h2>
+
+		  <div id="alert-disconnect" class="alert alert-info" role="alert" style="display:none;">
+		  	<p>You were disconnected for the following reason:</p>
+		  	<p><span id="disconnect-reason"></span></p>
+		  </div>
+
+		  <div class="form-group form-inline">
+			<label class="sr-only" for="server">Server</label>
+			<input title="Server" type="text" class="form-control" id="server" placeholder="Server" maxlength="256">
+			<label class="sr-only" for="port">Port</label>
+			<input title="Port" type="text" class="form-control" id="port" placeholder="Port" size="5" maxlength="5">
+			<br>
+			<label class="sr-only" for="username">Username</label>
+			<input title="Username" type="text" class="form-control" id="username" placeholder="Username" size="16" maxlength="256">
+			<label class="sr-only" for="password">Password</label>
+			<input title="Password" type="password" class="form-control" id="password" placeholder="Password" size="16" maxlength="256">
+			<br>
+			<div class="security-box">
+			  	<span id="ssl-span"><input type="checkbox" id="ssl"> Secure Sockets</span>
+			  	<span id="insecure-span"><input type="checkbox" id="insecure"> Insecure plain-text passwords</span>
+			</div>
+
+			<div class="panel-group">
+			  <ul class="list-style-none action">
+				<li><input type="radio" name="action" class="radiobox" value="connect" id="action_connect" checked="checked"> Connect</li>
+				<li><input type="radio" name="action" class="radiobox" value="start" id="action_start" checked="checked"> Start Command:
+					 <input title="command" type="text" class="form-control command" id="start_command" placeholder="Command" size="16" maxlength="256">
+				</li>
+				<li><input type="radio" name="action" class="radiobox" value="start-desktop" id="action_start_desktop" checked="checked"> Start Desktop:
+					 <input title="desktop command" type="text" class="form-control command" id="start_desktop_command" placeholder="Desktop Command" size="16" maxlength="256">
+				</li>
+				<li><input type="radio" name="action" class="radiobox" value="shadow" id="action_shadow" checked="checked"> Shadow</li>
+			  </ul>
+			</div>
+		  </div>
+
+		  <div class="form-group">
+		  	<a class="btn btn-lg btn-success" role="button" onclick="doConnect();">Connect</a>
+		  </div>
+
+		  <div class="panel-group" role="tablist">
+			<div class="panel panel-default">
+			  <div id="expandopts" class="panel-heading" role="tab">
+				<h4 class="panel-title">Advanced options</h4>
+			  </div>
+
+			  <div id="hiddenopts" class="panel-collapse collapse in" role="tabpanel" style="display:none;">
+				<ul class="list-group">
+
+				  <li class="list-group-item">
+					<select id="bandwidth_limit">
+					  <option value="0">None</option>
+					  <option value="100000000">100Mbps</option>
+					  <option value="10000000">10Mbps</option>
+					  <option value="1000000">1Mbps</option>
+					</select>
+					Bandwidth Constraint
+				  </li>
+
+				  <li class="list-group-item">
+					<select id="encoding">
+					  <option value="auto">Automatic</option>
+					  <option value="jpeg">JPEG</option>
+					  <option value="png">PNG</option>
+					  <option value="rgb">Raw RGB</option>
+					</select>
+					Encoding
+				  </li>
+
+				  <li class="list-group-item">
+					<select id="keyboard_layout">
+					  <option value="us">English USA</option>
+					  <option value="gb">United Kingdom</option>
+					  <option value="fr">France</option>
+					  <option value="de">Germany</option>
+					  <option value="ad">Andorra</option>
+					  <option value="af">Afghanistan</option>
+					  <option value="ara">Arabic</option>
+					  <option value="al">Albania</option>
+					  <option value="am">Armenia</option>
+					  <option value="az">Azerbaijan</option>
+					  <option value="by">Belarus</option>
+					  <option value="be">Belgium</option>
+					  <option value="bd">Bangladesh</option>
+					  <option value="in">India</option>
+					  <option value="ba">Bosnia</option>
+					  <option value="br">Brazil</option>
+					  <option value="bg">Bulgaria</option>
+					  <option value="ma">Morocco</option>
+					  <option value="mm">Myanmar</option>
+					  <option value="ca">Canada</option>
+					  <option value="cd">Congo,</option>
+					  <option value="cn">China</option>
+					  <option value="hr">Croatia</option>
+					  <option value="cz">Czechia</option>
+					  <option value="dk">Denmark</option>
+					  <option value="nl">Netherlands</option>
+					  <option value="bt">Bhutan</option>
+					  <option value="ee">Estonia</option>
+					  <option value="ir">Iran</option>
+					  <option value="iq">Iraq</option>
+					  <option value="fo">Faroe</option>
+					  <option value="fi">Finland</option>
+					  <option value="fr">France</option>
+					  <option value="gh">Ghana</option>
+					  <option value="gn">Guinea</option>
+					  <option value="ge">Georgia</option>
+					  <option value="gr">Greece</option>
+					  <option value="hu">Hungary</option>
+					  <option value="is">Iceland</option>
+					  <option value="il">Israel</option>
+					  <option value="it">Italy</option>
+					  <option value="jp">Japan</option>
+					  <option value="kg">Kyrgyzstan</option>
+					  <option value="kh">Cambodia</option>
+					  <option value="kz">Kazakhstan</option>
+					  <option value="la">Laos</option>
+					  <option value="latam">Latin</option>
+					  <option value="lt">Lithuania</option>
+					  <option value="lv">Latvia</option>
+					  <option value="mao">Maori</option>
+					  <option value="me">Montenegro</option>
+					  <option value="mk">Macedonia</option>
+					  <option value="mt">Malta</option>
+					  <option value="mn">Mongolia</option>
+					  <option value="no">Norway</option>
+					  <option value="pl">Poland</option>
+					  <option value="pt">Portugal</option>
+					  <option value="ro">Romania</option>
+					  <option value="ru">Russia</option>
+					  <option value="rs">Serbia</option>
+					  <option value="si">Slovenia</option>
+					  <option value="sk">Slovakia</option>
+					  <option value="es">Spain</option>
+					  <option value="se">Sweden</option>
+					  <option value="ch">Switzerland</option>
+					  <option value="sy">Syria</option>
+					  <option value="tj">Tajikistan</option>
+					  <option value="lk">Sri</option>
+					  <option value="th">Thailand</option>
+					  <option value="tr">Turkey</option>
+					  <option value="tw">Taiwan</option>
+					  <option value="ua">Ukraine</option>
+					  <option value="gb">United</option>
+					  <option value="uz">Uzbekistan</option>
+					  <option value="vn">Vietnam</option>
+					  <option value="kr">Korea,</option>
+					  <option value="jp">Japan</option>
+					  <option value="ie">Ireland</option>
+					  <option value="pk">Pakistan</option>
+					  <option value="mv">Maldives</option>
+					  <option value="za">South</option>
+					  <option value="epo">Esperanto</option>
+					  <option value="np">Nepal</option>
+					  <option value="ng">Nigeria</option>
+					  <option value="et">Ethiopia</option>
+					  <option value="sn">Senegal</option>
+					  <option value="brai">Braille</option>
+					  <option value="tm">Turkmenistan</option>
+					  <option value="ml">Mali</option>
+					  <option value="tz">Tanzania</option>
+					</select>
+					Keyboard Layout
+				  </li>
+
+				  <li class="list-group-item clipboard">
+				  	<input type="checkbox" id="clipboard"> <span>Clipboard sharing</span>
+				  </li>
+				  <li class="list-group-item printing">
+				  	<input type="checkbox" id="printing"> <span>Printing</span>
+				  </li>
+				  <li class="list-group-item file_transfer">
+				  	<input type="checkbox" id="file_transfer"> <span>File transfers</span>
+				  </li>
+				  <li class="list-group-item sound">
+					<input type="checkbox" id="sound"> <span>Audio forwarding, codec: </span>
+					<select id="audio_codec">
+				  	</select>
+				  	<input type="hidden" id="ignore_audio_blacklist" value="" />
+				  </li>
+				  <li class="list-group-item exit_with_children">
+				  	<input type="checkbox" id="exit_with_children"> <span>Terminate server when command exits</span>
+				  </li>
+				  <li class="list-group-item exit_with_client">
+				  	<input type="checkbox" id="exit_with_client"> <span>Terminate server when client disconnects</span>
+				  </li>
+				  <li class="list-group-item">
+				  	<input type="checkbox" id="sharing"> <span>Share session</span>
+				  </li>
+				  <li class="list-group-item">
+				  	<input type="checkbox" id="steal"> <span>Steal session from existing client</span>
+				  </li>
+				  <li class="list-group-item">
+				  	<input type="checkbox" id="reconnect"> <span>Re-connect automatically to the session</span>
+				  </li>
+				  <li class="list-group-item">
+				  	<input type="checkbox" id="swap_keys"> <span>Swap command and control key</span>
+				  </li>
+				  <li class="list-group-item">
+				  	<input type="checkbox" id="top_bar"> <span>Show top bar</span>, <input type="checkbox" id="clock"> <span>show server clock</span>
+				  </li>
+				  <li class="list-group-item">
+				  	<input type="checkbox" id="video"> <span>Video <input type="checkbox" id="mediasource_video"> Native decoding</span>
+				  </li>
+				  <li class="list-group-item">
+				  	<span>Server Path:</span>
+					<input title="path" type="text" class="form-control" id="path" placeholder="" size="16" maxlength="256">
+				  </li>
+				  <li class="list-group-item">
+				  	<span>Debugging</span>:<br/>
+				  	<input type="checkbox" id="debug_main"> <span>Main</span>,
+				  	<input type="checkbox" id="debug_keyboard"> <span>keyboard</span>,
+				  	<input type="checkbox" id="debug_mouse"> <span>mouse</span>,
+				  	<input type="checkbox" id="debug_clipboard"> <span>clipboard</span>
+				  	<input type="checkbox" id="debug_draw"> <span>draw</span>,
+				  	<input type="checkbox" id="debug_audio"> <span>audio</span>,
+				  	<input type="checkbox" id="debug_network"> <span>network</span>
+				  </li>
+				</ul>
+			  </div>
+			</div>
+		  </div>
+
+		</form>
+
+
+
+	</div> <!-- /container -->
+
+<script type="text/javascript">
+
+function doConnect() {
+	// url to client
+	var url = "./index.html";
+	function add_prop(prop, value) {
+		if (typeof(Storage) !== "undefined") {
+			if (value===null || value==="undefined") {
+				sessionStorage.removeItem(prop);
+			}
+			else {
+				sessionStorage.setItem(prop, value);
+			}
+		} else {
+			if (value===null || value==="undefined") {
+				value = "";
+			}
+			url = url + "&"+prop+"="+encodeURIComponent(""+value);
+		}
+	}
+	add_prop("submit", true);
+	var val_props = ["server", "port", "path", "username", "password", "bandwidth_limit", "encoding", "keyboard_layout", "audio_codec"];
+	for (var i = 0; i < val_props.length; i++) {
+		var prop = val_props[i];
+		var value = document.getElementById(prop).value;
+		if (value.length>0) {
+			add_prop(prop, value);
+		}
+	}
+
+	var start = null;
+	if (document.getElementById("action_connect").checked) {
+		add_prop("action", "connect");
+	}
+	else if (document.getElementById("action_start").checked) {
+		add_prop("action", "start");
+		start = document.getElementById("start_command").value;
+	}
+	else if (document.getElementById("action_start_desktop").checked) {
+		add_prop("action", "start-desktop");
+		start = document.getElementById("start_desktop_command").value;
+	}
+	else if (document.getElementById("action_shadow").checked) {
+		add_prop("action", "shadow");
+	}
+	if(start) {
+		add_prop("start", start);
+	}
+
+	var bool_props = ["clipboard", "printing", "file_transfer",
+		"sound", "ignore_audio_blacklist",
+		"exit_with_children", "exit_with_client",
+		"sharing", "steal", "reconnect", "swap_keys",
+		"video", "mediasource_video",
+		"ssl", "insecure", "top_bar", "clock",
+		"debug_main", "debug_keyboard", "debug_mouse", "debug_clipboard", "debug_draw", "debug_audio", "debug_network",
+		];
+	for (var i = 0; i < bool_props.length; i++) {
+		var prop = bool_props[i];
+		add_prop(prop, document.getElementById(prop).checked);
+	}
+	window.location = url;
+}
+
+$(document).ready(function() {
+	var getparam = Utilities.getparam;
+	var getboolparam = Utilities.getboolparam;
+
+	var disconnect_reason = getparam("disconnect") || null;
+
+	if(disconnect_reason) {
+		document.getElementById("alert-disconnect").style.display = "block";
+		document.getElementById("disconnect-reason").innerHTML = disconnect_reason;
+	}
+
+	//Populate the form:
+	var url = window.location.href;
+	var link = document.createElement('a');
+	link.setAttribute('href', url);
+	var pathname = link.pathname;
+	if (pathname && Utilities.endsWith(pathname, "connect.html")) {
+		pathname = pathname.substring(0, pathname.length-"connect.html".length);
+	}
+	if (pathname && pathname=="/") {
+		pathname = "";
+	}
+	document.getElementById("server").value = getparam("server") || link.hostname;
+	document.getElementById("port").value = getparam("port") || link.port;
+	document.getElementById("path").value = getparam("path") || pathname;
+	document.getElementById("username").value = getparam("username") || "";
+	var https = document.location.protocol=="https:";
+	var ssl = getboolparam("ssl", https);
+	var insecure = getboolparam("insecure", false);
+	$('input#ssl').prop("checked", ssl);
+	$('input#insecure').prop("checked", insecure);
+	var ssl_input = document.getElementById("ssl");
+	var insecure_input = document.getElementById("insecure");
+	var has_local_storage = typeof(Storage)!=="undefined";
+	if (!has_local_storage) {
+		//passwords would be sent on URL,
+		//so show insecure checkbox whenever ssl is off:
+		ssl_input.onchange = function() {
+			$('input#password').prop("disabled", !has_local_storage && !ssl_input.checked && !insecure_input.checked);
+			if (ssl_input.checked) {
+			   	$('span#insecure-span').hide();
+			}
+			else {
+			   	$('span#insecure-span').show();
+			}
+		}
+	}
+	else {
+		//local storage makes this secure
+	   	$('span#insecure-span').hide();
+	}
+	$('input#password').prop("disabled", !has_local_storage && !ssl_input.checked && !insecure_input.checked);
+	insecure_input.onchange = function() {
+		$('input#password').prop("disabled", !has_local_storage && !ssl_input.checked && !insecure_input.checked);
+	};
+
+	var action = getparam("action") || "";
+	if(action=="shadow") {
+		document.getElementById("action_shadow").checked = true;
+	}
+	else if(action=="start-desktop") {
+		document.getElementById("action_start_desktop").checked = true;
+	}
+	else if(action=="start") {
+		document.getElementById("action_start").checked = true;
+	}
+	else {
+		document.getElementById("action_connect").checked = true;
+	}
+	function set_exit_actions(disabled) {
+		var opacity = disabled ? 0.6 : 1;
+	   	$('input#exit_with_children').prop("disabled", disabled);
+	   	$('input#exit_with_client').prop("disabled", disabled);
+	   	$('li.exit_with_children span').css("opacity", opacity);
+	   	$('li.exit_with_client span').css("opacity", opacity);
+	   	if (disabled) {
+		   	$('input#exit_with_children').prop("checked", false);
+		   	$('input#exit_with_client').prop("checked", false);
+	   	}
+	}
+	$(document).on('click', '[name="action"]', function() {
+		var action = $(this).val();
+		set_exit_actions(action=="connect");
+	});
+	set_exit_actions(action=="connect" || action=="")
+	$('input:radio[value="'+action+'"]').click();
+
+	var encoding = getparam("encoding") || "auto";
+	document.getElementById('encoding').value = encoding;
+
+	var bandwidth_limit = getparam("bandwidth_limit");
+	if(bandwidth_limit==null) {
+		var ci = Utilities.getConnectionInfo();
+		if (ci) {
+			bandwidth_limit = ci["downlink"];
+		}
+	}
+	document.getElementById('bandwidth_limit').value = bandwidth_limit || 0;
+
+	var keyboard_layout = Utilities.getKeyboardLayout();
+	document.getElementById('keyboard_layout').value = keyboard_layout;
+	try {
+		var req = new XMLHttpRequest()
+		req.open('GET', "/favicon.png?echo-headers", true);
+		req.onload = function (e) {
+			if (req.readyState === 4) {
+				if (req.status === 200) {
+					var headers = Utilities.ParseResponseHeaders(req.getAllResponseHeaders());
+					console.debug("headers:", headers);
+					var lang = headers["Echo-Accept-Language"];
+					//ie: lang = "en-gb,en-us;q=0.8,en;q=0.6"
+					if (lang) {
+						//just the first option:
+						console.debug("accept-language:", lang);
+						lang = lang.split(",")[0];		//ie: lang="en-gb"
+						console.debug("first language:", lang);
+						var locale = lang.split("-")[1];
+						if (locale) {
+							locale = locale.toLowerCase();
+							console.debug("request locale:", locale);
+							if (locale!=keyboard_layout) {
+								keyboard_layout = locale;
+								document.getElementById('keyboard_layout').value = keyboard_layout;
+							}
+						}
+					}
+					//
+				} else {
+					console.error(req.statusText);
+				}
+			}
+		};
+		req.send(null);
+	}
+	catch (e) {
+		console.warn("Warning: failed to get HTTP header probe:", e);
+	}
+
+	var audio_codec = getparam("audio_codec") || "";
+	var audio_codec_select = document.getElementById("audio_codec");
+	var ignore_audio_blacklist = getboolparam("ignore_audio_blacklist", false);
+	if(ignore_audio_blacklist) {
+		$('input#ignore_audio_blacklist').prop("value", true);
+	}
+
+	var codecs_supported = [];
+	if(getboolparam("mediasource", true)) {
+		mediasource_codecs = MediaSourceUtil.getMediaSourceAudioCodecs(ignore_audio_blacklist);
+		for (var codec_option in mediasource_codecs) {
+			codecs_supported["mediasource:"+codec_option] = MediaSourceConstants.CODEC_DESCRIPTION[codec_option];
+		}
+	}
+	if(getboolparam("aurora", true)) {
+		var aurora_codecs = MediaSourceUtil.getAuroraAudioCodecs();
+		for (var codec_option in aurora_codecs) {
+			if(codec_option in codecs_supported) {
+				//we already have native MediaSource support!
+				continue;
+			}
+			codecs_supported["aurora:"+codec_option] = "legacy: "+MediaSourceConstants.CODEC_DESCRIPTION[codec_option];
+		}
+	}
+	if(getboolparam("http-stream", true)) {
+		var stream_codecs = ["mp3"];
+		for (var i in stream_codecs) {
+			var codec_option = stream_codecs[i];
+			console.log("stream codecs=", stream_codecs, "codec=", codec_option);
+			codecs_supported["http-stream:"+codec_option] = "http stream: "+MediaSourceConstants.CODEC_DESCRIPTION[codec_option];
+		}
+	}
+	var best_codec = audio_codec;
+	if(!best_codec) {
+		var best_distance = MediaSourceConstants.PREFERRED_CODEC_ORDER.length;
+		for (var codec_option in codecs_supported) {
+			var cs = codec_option.split(":")[1];
+			var distance = MediaSourceConstants.PREFERRED_CODEC_ORDER.indexOf(cs);
+			if(distance>=0 && distance<best_distance) {
+				best_codec = codec_option;
+				best_distance = distance;
+			}
+		}
+	}
+	for (var codec_option in codecs_supported) {
+	    var option = document.createElement("option");
+	    option.value = codec_option;
+	    var description = MediaSourceConstants.CODEC_DESCRIPTION[codec_option] || codecs_supported[codec_option];
+	    option.textContent = description;
+    	option.selected = (codec_option==best_codec);
+	    audio_codec_select.add(option);
+	}
+	if(!codecs_supported) {
+	   	$('input#sound').prop("disabled", true);
+	}
+	else {
+		//enable sound checkbox if the codec is changed:
+		audio_codec_select.onchange = function() {
+			document.getElementById("sound").checked = true;
+		};
+	}
+	var sound = getboolparam("sound");
+	$('input#sound').prop("checked", sound && Object.keys(codecs_supported).length>0);
+
+	var video = document.getElementById("video");
+	$('input#video').prop("checked", getboolparam("video", true));
+	function toggle_mediasource_video() {
+		$('#mediasource_video').prop("disabled", !video.checked);
+	}
+	video.onchange = toggle_mediasource_video;
+	toggle_mediasource_video();
+
+	var bool_props = ["clipboard", "printing", "file_transfer",
+			"exit_with_children", "exit_with_client",
+			"sharing", "steal", "reconnect", "swap_keys",
+			"video", "mediasource_video", "top_bar", "clock",
+			"debug_main", "debug_keyboard", "debug_mouse", "debug_clipboard", "debug_draw", "debug_audio", "debug_network"];
+	var default_on = ["steal", "clipboard", "printing", "file_transfer", "reconnect", "top_bar", "clock", "exit_with_children", "exit_with_client"];
+	if (Utilities.isMacOS()) {
+		default_on.push("swap_keys");
+	}
+	for (var i = 0; i < bool_props.length; i++) {
+		var prop = bool_props[i];
+		var def = default_on.indexOf(prop)>=0;
+		document.getElementById(prop).checked = getboolparam(prop, def);
+	}
+
+	var top_bar_checkbox = $("#top_bar");
+	function set_clock_visibility() {
+		if (top_bar_checkbox.is(':checked')) {
+			$("#clock").removeAttr("disabled");
+		}
+		else {
+		    $("#clock").attr("disabled", true);
+		}
+	}
+	top_bar_checkbox.change(set_clock_visibility);
+	set_clock_visibility();
+
+	$("#expandopts").click(function() {
+		$("#hiddenopts").slideToggle();
+	});
+	//delete session params:
+	try {
+		sessionStorage.clear();
+	}
+	catch (e) {
+		//ignore
+	}
+});
+
+</script>
+
+</body>
+</html>

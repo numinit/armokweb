@@ -1,0 +1,165 @@
+#!/bin/sh
+
+set -e
+
+roots="/usr /usr/local"
+
+xpra="xpra"
+xpra_roots="$roots"
+module_roots="$roots"
+font_roots="$roots"
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    -s|--spawn)
+      child="$2"
+      shift 2
+      ;;
+    -l|--listen)
+      listen="$2"
+      shift 2
+      ;;
+    -w|--web-root)
+      web_root="$2"
+      shift 2
+      ;;
+    -x|--xpra)
+      xpra="$2"
+      shift 2
+      ;;
+    -X|--xpra-root)
+      xpra_roots="$xpra_roots $2"
+      shift 2
+      ;;
+    -M|--module-root)
+      module_roots="$module_roots $2"
+      shift 2
+      ;;
+    -F|--font-root)
+      font_roots="$font_roots $2"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+if [ ! -f "$child" ] || [ -z "$listen" ] || [ ! -d "$web_root" ]; then
+    echo "Usage: $0 --spawn CHILD --listen ADDR:PORT " >&2
+    echo "          --web-root ROOT [--xpra XPRA_BINARY] [--xpra-root XPRA_ROOT ...]" >&2
+    echo "          [--module-root MODULE_ROOT ...] [--font-root FONT_ROOT ...]" >&2
+    exit 1
+fi
+
+child="$(realpath -- "$child")"
+web_root="$(realpath -- "$web_root")"
+
+for root in $xpra_roots; do
+    path="$root/bin/xpra_Xdummy"
+    if [ -f "$path" ]; then
+        xdummy="$path"
+        break
+    fi
+done
+
+if [ -z "$xdummy" ]; then
+    echo "No xpra_Xdummy found. Please provide an xpra root using --xpra-root." >&2
+    exit 1
+else
+    echo "Found xpra_Xdummy at $xdummy" >&2
+fi
+
+cat >&2 <<EOF
+Spawn: $child
+Listen on: $listen
+Web root: $web_root
+Xpra: $xpra
+xpra_Xdummy: $xdummy
+
+Xpra roots: $xpra_roots
+Module roots: $module_roots
+Font roots: $font_roots
+EOF
+
+config="$(mktemp -t xpra-XXXXXX.xorg.conf)"
+
+echo "Creating $config..." >&2
+
+cleanup() {
+    rm -f "$config"
+}
+
+trap cleanup EXIT
+
+cat > "$config" <<EOF
+# This is $(basename "$config"), a *masterwork X11 configuration*. All craftdwarfship is of the highest quality.
+# It was created on $(date) by $(whoami). This object menaces with spikes of its legacy.
+EOF
+
+echo >> "$config"
+echo 'Section "Files"' >> "$config"
+
+for root in $module_roots; do
+    module_path="$root/lib/xorg/modules/"
+    if [ -d "$module_path" ]; then
+        echo "  Found module path: $module_path" >&2
+        echo '    ModulePath "'"$module_path"'"' >> "$config"
+    fi
+done
+
+for root in $font_roots; do
+    path="$root/share/fonts/"
+    if [ -d "$path" ]; then
+        echo "  Found font path: $path" >&2
+        echo '    FontPath "'"$path"'"' >> "$config"
+    fi
+    path="$root/lib/X11/fonts/misc/"
+    if [ -d "$path" ]; then
+        echo "  Found font misc path: $path" >&2
+        echo '    FontPath "'"$path"'"' >> "$config"
+    fi
+done
+
+echo "EndSection" >> "$config"
+echo >> "$config"
+
+for root in $xpra_roots; do
+    xpra_xorg_conf="$root/etc/xpra/xorg.conf"
+    if [ -f "$xpra_xorg_conf" ]; then
+        echo "  Found xpra xorg.conf: $xpra_xorg_conf" >&2
+        cat "$xpra_xorg_conf" >> "$config"
+    fi
+done
+
+echo "Config written. About to start xpra." >&2
+
+xdummy_args='-noreset -novtswitch -nolisten tcp +extension GLX +extension RANDR +extension RENDER -auth $XAUTHORITY -logfile ${XPRA_LOG_DIR}/Xorg.${DISPLAY}.log -config '"$config"
+
+(
+    exec "$xpra" start \
+        --xvfb="$xdummy $xdummy_args" \
+        --daemon=no \
+        --encodings=png \
+        --mmap=yes \
+        --printing=no \
+        --mdns=no \
+        --webcam=no \
+        --speaker=on \
+        --dpi=72 \
+        --html="$web_root" \
+        --file-transfer=no \
+        --open-files=no \
+        --open-url=no \
+        --start-new-commands=no \
+        --bind-tcp="$listen" \
+        --pulseaudio=no \
+        --sharing=yes \
+        --chdir="$(dirname -- "$child")" \
+        --start-child="$child" \
+        --exit-with-children=yes \
+        --terminate-children=yes
+) &
+
+wait
