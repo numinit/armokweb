@@ -33,7 +33,7 @@ To create a Nix container for Armok Web Services, add the following to your
 ### nginx `proxy_pass` config
 
 If you want to use nginx as a proxy server, a config like this will work.
-It's *highly* recommended to use SSL if you're hosting this on the internet.
+It's *highly* recommended to use TLS if you're hosting this on the internet.
 
 ```nix
 services.nginx = {
