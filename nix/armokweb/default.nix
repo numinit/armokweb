@@ -44,7 +44,7 @@ pkgs.stdenv.mkDerivation rec {
 
   meta = with pkgs.stdenv.lib; {
     description = "Play Dwarf Fortress in a browser session";
-    license = licenses.agpl;
+    license = licenses.agpl3;
     platforms = platforms.linux;
     maintainers = with maintainers; [ numinit ];
   };
