@@ -1,5 +1,7 @@
 # armokweb
 
+Demo: https://armokweb.numin.it/ - check the lobste.rs thread for credentials
+
 Armok Web Services: play collaborative (or chaotic) Dwarf Fortress sessions
 in your browser by streaming through [xpra](https://xpra.org/). Manage your
 fort's labors while a friend manages your military. It's like having multiple
