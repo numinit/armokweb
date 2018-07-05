@@ -31,3 +31,7 @@ Containers aren't perfect. Only give access to people you trust!
 ## Related projects
 
 * [dfremote](https://github.com/mifki/dfremote)
+
+## License notice
+
+See [NOTICE.md](NOTICE.md)
