@@ -140,6 +140,12 @@ done
 echo "EndSection" >> "$config"
 echo >> "$config"
 
+cat <<EOF >> "$config"
+Section "Module"
+    Load "libfb.so"
+EndSection
+EOF
+
 for root in $xpra_roots; do
     xpra_xorg_conf="$root/etc/xpra/xorg.conf"
     if [ -f "$xpra_xorg_conf" ]; then

@@ -27,6 +27,5 @@ fi
 sleep 1
 
 "$DIR/wrap.sh" --terminal "Therapist Console" --exec "DwarfTherapist" &
-
 wait
 exit 0

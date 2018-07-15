@@ -789,9 +789,7 @@ XpraClient.prototype._get_desktop_size = function() {
 
 XpraClient.prototype._get_DPI = function() {
 	"use strict";
-    return 96;
 
-    /*
 	var dpi_div = document.getElementById("dpi");
 	if (dpi_div != undefined) {
 		//show("dpiX="+dpi_div.offsetWidth+", dpiY="+dpi_div.offsetHeight);
@@ -803,7 +801,6 @@ XpraClient.prototype._get_DPI = function() {
 		return (screen.systemXDPI + screen.systemYDPI) / 2;
 	//default:
 	return 96;
-    */
 }
 
 XpraClient.prototype._get_screen_sizes = function() {

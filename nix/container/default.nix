@@ -18,6 +18,10 @@ let
   unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {};
   df = import (fetchGit { url = https://github.com/numinit/nixpkgs.git; ref = "df"; }) {};
   # df = import /home/numinit/nixpkgs {};
+
+  xpra = import (fetchGit { url = https://github.com/numinit/nixpkgs.git; ref = "xpra"; }) {};
+  # xpra = import /home/numinit/nixpkgs {};
+
   armokweb = import ../armokweb;
 in
 {
@@ -37,11 +41,15 @@ in
       xorg.xkbcomp
       xorg.xrandr
 
-      xlibs.xmodmap
+      libGL
+      glxinfo
+      virtualgl
 
+      xlibs.xmodmap
       xterm
 
-      unstable.xpra
+      xpra.xpra
+      xpra.xpra.xf86videodummy
 
       (df.dwarf-fortress-packages.dwarf-fortress-full.override {
         dfVersion = "0.44.12";
