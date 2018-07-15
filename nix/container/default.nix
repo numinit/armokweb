@@ -30,12 +30,6 @@ in
 
       armokweb
 
-      glxinfo
-      libGL
-
-      gnome2.gtkglext gnome2.libglade
-      gtk3 gdk_pixbuf gobjectIntrospection
-
       xorg.xorgserver
       xorg.xinit
       xorg.xf86videodummy
@@ -47,15 +41,18 @@ in
 
       xterm
 
-      xvfb_run xdummy
-
       unstable.xpra
-      unstable.pythonPackages.rencode
 
       (df.dwarf-fortress-packages.dwarf-fortress-full.override {
+        dfVersion = "0.44.12";
         theme = "cla";
-        enableFPS = true;
+        enableDFHack = true;
         enableTWBT = false; # Currently broken, because of libgl/swrast issues.
+        enableSoundSense = true;
+        enableStoneSense = true;
+        enableDwarfTherapist = true;
+        enableLegendsBrowser = true;
+        enableFPS = true;
         enableIntro = false;
       })
     ];

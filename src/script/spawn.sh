@@ -36,7 +36,11 @@ xmodmap -e 'keycode 94 = brokenbar'
 echo "Setting DPI..."
 xrandr --dpi 96
 
-TARGET="$1"
-echo "Starting $TARGET..."
+target="$1"
+echo "Starting $target..."
 shift
-exec "$TARGET" "$@"
+"$target" "$@"
+status=$?
+echo "$target exited with code $status; quitting."
+sleep 3
+exit $status

@@ -17,8 +17,16 @@
 
 DIR="$(dirname -- "$0")"
 
-"$DIR/wrap.sh" --terminal "Therapist Console" --exec "dwarftherapist" &
-"$DIR/wrap.sh" --terminal "DFHack Console" --exec "dfhack" &
+if command -v dfhack &> /dev/null; then
+    "$DIR/wrap.sh" --terminal "DFHack Console" --exec "dfhack" &
+else
+    "$DIR/wrap.sh" --terminal "DF Console" --exec "dwarf-fortress" &
+fi
+
+# Wait a second so Therapist doesn't warn the user that the process doesn't exist
+sleep 1
+
+"$DIR/wrap.sh" --terminal "Therapist Console" --exec "DwarfTherapist" &
 
 wait
 exit 0
