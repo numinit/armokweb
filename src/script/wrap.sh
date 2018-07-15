@@ -17,8 +17,36 @@
 
 DIR="$(dirname -- "$0")"
 
-"$DIR/wrap.sh" --terminal "Therapist Console" --exec "dwarftherapist" &
-"$DIR/wrap.sh" --terminal "DFHack Console" --exec "dfhack" &
+terminal_title=""
+exec_child=""
 
-wait
-exit 0
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    -e|--exec)
+      exec_child="$2"
+      shift 2
+      ;;
+    -t|--terminal)
+      terminal_title="$2"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+if [ -z "$exec_child" ]; then
+    echo "Usage: $0 --exec CHILD [--terminal TERMINAL-TITLE]" >&2
+    exit 1
+fi
+
+spawn="$DIR/spawn.sh"
+
+if [ -z "$terminal_title" ]; then
+    # Run in the foreground
+    exec "$spawn" "$exec_child"
+else
+    exec xterm -T "$terminal_title" -e "$spawn $exec_child"
+fi

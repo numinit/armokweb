@@ -15,24 +15,28 @@
 # You should have received a copy of the GNU General Public License
 # along with armokweb.  If not, see <https://www.gnu.org/licenses/>.
 
-DIR="$(dirname "$0")"
+DIR="$(dirname -- "$0")"
+
+cat <<EOF
+                             __                  ___.    
+_____ _______  _____   ____ |  | ____  _  __ ____\\_ |__  
+\\__  \\\\_  __ \\/     \\ /  _ \\|  |/ /\\ \\/ \\/ // __ \\| __ \\ 
+ / __ \\|  | \\/  Y Y  (  <_> )    <  \\     /\\  ___/| \\_\\ \\ 
+(____  /__|  |__|_|  /\\____/|__|_ \\  \\/\\_/  \\___  >___  /
+     \\/            \\/            \\/             \\/    \\/ 
+EOF
+
+echo
+sleep 1
 
 # HACK: what the fuck, we need to remap this so '<' and '>' aren't both '>'
 echo "Fixing keymap..."
 xmodmap -e 'keycode 94 = brokenbar'
 
-echo "Starting Dwarf Therapist..."
-dwarftherapist >/dev/null 2>&1 &
-dt_pid=$!
+echo "Setting DPI..."
+xrandr --dpi 96
 
-# Start DF in the foreground
-echo "Starting Dwarf Fortress..."
-dfhack
-
-# Wait for Therapist to quit
-echo "Dwarf Fortress quit; close Therapist and this console to exit."
-wait
-
-echo "Dwarf Fortress and Therapist exited; restarting."
-sleep 5
-exit 0
+TARGET="$1"
+echo "Starting $TARGET..."
+shift
+exec "$TARGET" "$@"

@@ -150,7 +150,10 @@ done
 
 echo "Config written. About to start xpra." >&2
 
-xdummy_args='-noreset -novtswitch -nolisten tcp +extension GLX +extension RANDR +extension RENDER -auth $XAUTHORITY -logfile ${XPRA_LOG_DIR}/Xorg.${DISPLAY}.log -config '"$config"
+dpi=96
+xdummy_args="-noreset -novtswitch -nolisten tcp -dpi $dpi +extension GLX +extension RANDR +extension RENDER +iglx"
+xdummy_args="$xdummy_args "'-auth $XAUTHORITY -logfile ${XPRA_LOG_DIR}/Xorg.${DISPLAY}.log'
+xdummy_args="$xdummy_args ""-config $config"
 
 (
     exec "$xpra" start \
@@ -162,7 +165,7 @@ xdummy_args='-noreset -novtswitch -nolisten tcp +extension GLX +extension RANDR 
         --mdns=no \
         --webcam=no \
         --speaker=on \
-        --dpi=72 \
+        --dpi="$dpi" \
         --html="$web_root" \
         --file-transfer=no \
         --open-files=no \

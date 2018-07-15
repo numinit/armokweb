@@ -20,13 +20,6 @@ others. Pull requests are welcome to get it working on your distribution.
 
 We currently support deploying on NixOS in containers.
 
-The deployment is currently not perfect, copy the `script` folder under `src`
-to the home folder of the `df` user in the container and restart the container.
-
-Dwarf Therapist also complains about memory maps missing; you might have to
-drop a symlink to `memory_layouts` into ~/.local/share/dwarftherapist.
-This should be fixable in nixpkgs at some point.
-
 To create a Nix container for Armok Web Services, add the following to your
 `configuration.nix` after cloning this repository:
 

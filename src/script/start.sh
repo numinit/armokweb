@@ -17,7 +17,7 @@
 
 [ -f /etc/profile ] && source /etc/profile
 
-DIR="$(dirname "$0")"
+DIR="$(dirname -- "$0")"
 
 trap exit SIGHUP
 

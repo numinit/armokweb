@@ -16,19 +16,22 @@
 let
   pkgs = import <nixpkgs> {};
   unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {};
-  master = import (fetchGit https://github.com/NixOS/nixpkgs) {};
+  df = import (fetchGit { url = https://github.com/numinit/nixpkgs.git; ref = "df"; }) {};
+  # df = import /home/numinit/nixpkgs {};
   armokweb = import ../armokweb;
 in
 {
   config = {
-    # TODO: clean up.
     environment.systemPackages = with pkgs; [
-      coreutils wget vim curl git subversion htop bash zsh tmux psmisc
+      coreutils vim htop bash tmux psmisc
 
       ruby
       python27
 
       armokweb
+
+      glxinfo
+      libGL
 
       gnome2.gtkglext gnome2.libglade
       gtk3 gdk_pixbuf gobjectIntrospection
@@ -38,23 +41,46 @@ in
       xorg.xf86videodummy
       xorg.xf86inputevdev
       xorg.xkbcomp
+      xorg.xrandr
+
+      xlibs.xmodmap
 
       xterm
-      xlibs.xmodmap
 
       xvfb_run xdummy
 
       unstable.xpra
       unstable.pythonPackages.rencode
 
-      (master.dwarf-fortress.override {
-        enableDFHack = true;
-        enableStoneSense = false;
-        enableSoundSense = false;
+      (df.dwarf-fortress-packages.dwarf-fortress-full.override {
         theme = "cla";
+        enableFPS = true;
+        enableTWBT = false; # Currently broken, because of libgl/swrast issues.
+        enableIntro = false;
       })
-      master.dwarf-therapist
     ];
+
+    environment.etc = {
+      "armokweb/start.sh" = {
+        source = ../../src/script/start.sh;
+        mode = "0755";
+      };
+
+      "armokweb/runner.sh" = {
+        source = ../../src/script/runner.sh;
+        mode = "0755";
+      };
+
+      "armokweb/wrap.sh" = {
+        source = ../../src/script/wrap.sh;
+        mode = "0755";
+      };
+
+      "armokweb/spawn.sh" = {
+        source = ../../src/script/spawn.sh;
+        mode = "0755";
+      };
+    };
 
     hardware.pulseaudio = {
       enable = true;
@@ -74,7 +100,7 @@ in
         User = "df";
         Type = "forking";
         WorkingDirectory = "/home/df";
-        ExecStart = "${pkgs.tmux}/bin/tmux new-session -s armokweb -d '${armokweb}/bin/armokweb --spawn ~/script/wrapper.sh --listen 0.0.0.0:10000'";
+        ExecStart = "${pkgs.tmux}/bin/tmux new-session -s armokweb -d '${armokweb}/bin/armokweb --spawn /etc/armokweb/start.sh --listen 0.0.0.0:10000'";
         ExecStop = "${pkgs.tmux}/bin/tmux kill-session -t armokweb";
       };
       wantedBy = ["multi-user.target"];
@@ -87,7 +113,7 @@ in
       extraUsers.df = {
         isNormalUser = true;
         uid = 1001;
-        extraGroups = ["audio" "tty"];
+        extraGroups = ["audio" "video" "tty"];
       };
     };
   };
