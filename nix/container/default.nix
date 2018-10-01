@@ -16,9 +16,7 @@
 let
   pkgs = import <nixpkgs> {};
   unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {};
-
-  xpra = import (fetchGit { url = https://github.com/numinit/nixpkgs.git; ref = "xpra"; }) {};
-  # xpra = import /home/numinit/nixpkgs {};
+  xpra = import (fetchGit { url = https://github.com/numinit/nixpkgs.git; ref = "xf86videodummy"; }) {};
 
   armokweb = import ../armokweb;
 in
