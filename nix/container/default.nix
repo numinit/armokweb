@@ -16,7 +16,6 @@
 let
   pkgs = import <nixpkgs> {};
   unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {};
-  xpra = import (fetchGit { url = https://github.com/numinit/nixpkgs.git; ref = "xf86videodummy"; }) {};
 
   armokweb = import ../armokweb;
 in
@@ -44,11 +43,10 @@ in
       xlibs.xmodmap
       xterm
 
-      xpra.xpra
-      xpra.xpra.xf86videodummy
+      xpra
+      #xpra.xf86videodummy
 
-      (unstable.dwarf-fortress-packages.dwarf-fortress-full.override {
-        dfVersion = "0.44.12";
+      (dwarf-fortress-packages.dwarf-fortress-full.override {
         theme = "phoebus";
         enableDFHack = true;
         enableTWBT = true;

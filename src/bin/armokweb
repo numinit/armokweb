@@ -165,8 +165,9 @@ xdummy_args="$xdummy_args ""-config $config"
     exec "$xpra" start \
         --xvfb="$xdummy $xdummy_args" \
         --daemon=no \
-        --encodings=png \
         --mmap=yes \
+        --encodings=jpeg \
+        --quality=100 \
         --printing=no \
         --mdns=no \
         --webcam=no \

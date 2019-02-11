@@ -15,8 +15,7 @@
 
 let
   pkgs = import <nixpkgs> {};
-  unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {};
-  xpra = import (fetchGit { url = https://github.com/numinit/nixpkgs.git; ref = "xf86videodummy"; }) {};
+  #unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {};
 in
 pkgs.stdenv.mkDerivation rec {
   name = "armokweb";
@@ -33,10 +32,10 @@ pkgs.stdenv.mkDerivation rec {
     cp bin/armokweb $out/bin/.armokweb-original
     cp -R public $out/share/armokweb
     makeWrapper $out/bin/.armokweb-original $out/bin/armokweb \
-      --add-flags "--xpra ${xpra.xpra}/bin/xpra" \
-      --add-flags "--xpra-root ${xpra.xpra}" \
-      --add-flags "--module-root ${xpra.xpra.xf86videodummy}" \
+      --add-flags "--xpra ${pkgs.xpra}/bin/xpra" \
+      --add-flags "--xpra-root ${pkgs.xpra}" \
       --add-flags "--module-root ${pkgs.xorg.xf86inputevdev}" \
+      --add-flags "--module-root ${pkgs.xorg.xf86videodummy}" \
       --add-flags "--module-root ${pkgs.xorg.xorgserver}" \
       --add-flags "--font-root ${pkgs.xorg.fontmiscmisc}" \
       --add-flags "--font-root ${pkgs.ucsFonts}" \
@@ -47,6 +46,6 @@ pkgs.stdenv.mkDerivation rec {
     description = "Play Dwarf Fortress in a browser session";
     license = licenses.gpl3;
     platforms = platforms.linux;
-    maintainers = with xpra.maintainers; [ numinit ];
+    maintainers = with pkgs.maintainers; [ numinit ];
   };
 }

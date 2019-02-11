@@ -17,6 +17,8 @@
 
 DIR="$(dirname -- "$0")"
 
+export LP_NUM_THREADS=2
+
 if command -v dfhack &> /dev/null; then
     "$DIR/wrap.sh" --terminal "DFHack Console" --exec "dfhack" &
 else
